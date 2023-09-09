@@ -1,68 +1,91 @@
-import tkinter as tk
-
 class Note:
     def __init__(self, title, content):
         self.title = title
         self.content = content
 
-class NoteApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Приложение заметок")
-
-        self.notes_frame = tk.Frame(self.root)
-        self.notes_frame.pack(pady=10)
-
-        self.title_label = tk.Label(self.notes_frame, text="Заголовок:")
-        self.title_label.grid(row=0, column=0, padx=10, pady=10)
-
-        self.title_entry = tk.Entry(self.notes_frame, width=30)
-        self.title_entry.grid(row=0, column=1, padx=10, pady=10)
-
-        self.content_label = tk.Label(self.notes_frame, text="Содержание:")
-        self.content_label.grid(row=1, column=0, padx=10, pady=10)
-
-        self.content_entry = tk.Text(self.notes_frame, width=30, height=10)
-        self.content_entry.grid(row=1, column=1, padx=10, pady=10)
-
-        self.buttons_frame = tk.Frame(self.root)
-        self.buttons_frame.pack(pady=10)
-
-        self.create_button = tk.Button(self.buttons_frame, text="Создать заметку", command=self.create_note)
-        self.create_button.grid(row=0, column=0, padx=10)
-
-        self.display_button = tk.Button(self.buttons_frame, text="Отобразить заметки", command=self.display_notes)
-        self.display_button.grid(row=0, column=1, padx=10)
-
+class NoteManager:
+    def __init__(self):
         self.notes = []
 
     def create_note(self):
-        title = self.title_entry.get()
-        content = self.content_entry.get("1.0", tk.END)
+        title = input("Введите заголовок заметки: ")
+        content = input("Введите содержимое заметки: ")
         note = Note(title, content)
         self.notes.append(note)
-        self.title_entry.delete(0, tk.END)
-        self.content_entry.delete("1.0", tk.END)
+        print("Заметка создана.")
 
-    def display_notes(self):
-        display_window = tk.Toplevel(self.root)
-        display_window.title("Отображение заметок")
+    def save_notes(self):
+        # Здесь может быть код сохранения заметок в файл или базу данных
+        print("Заметки сохранены.")
 
-        notes_frame = tk.Frame(display_window)
-        notes_frame.pack(pady=10)
+    def read_notes(self):
+        if not self.notes:
+            print("Список заметок пуст.")
+            return
 
-        for index, note in enumerate(self.notes):
-            title_label = tk.Label(notes_frame, text=f"Заметка #{index+1}")
-            title_label.pack()
+        print("Список заметок:")
+        for i, note in enumerate(self.notes, 1):
+            print(f"Заметка #{i}")
+            print(f"Заголовок: {note.title}")
+            print(f"Содержимое: {note.content}")
+            print()
 
-            content_label = tk.Label(notes_frame, text=note.title)
-            content_label.pack()
+    def edit_note(self):
+        if not self.notes:
+            print("Список заметок пуст.")
+            return
 
-            content_text = tk.Text(notes_frame, width=30, height=10)
-            content_text.insert(tk.END, note.content)
-            content_text.pack()
+        note_index = int(input("Введите номер заметки для редактирования: "))
+        if note_index < 1 or note_index > len(self.notes):
+            print("Неверный номер заметки.")
+            return
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    note_app = NoteApp(root)
-    root.mainloop()
+        new_title = input("Введите новый заголовок заметки: ")
+        new_content = input("Введите новое содержимое заметки: ")
+
+        note = self.notes[note_index - 1]
+        note.title = new_title
+        note.content = new_content
+
+        print("Заметка отредактирована.")
+
+    def delete_note(self):
+        if not self.notes:
+            print("Список заметок пуст.")
+            return
+
+        note_index = int(input("Введите номер заметки для удаления: "))
+        if note_index < 1 or note_index > len(self.notes):
+            print("Неверный номер заметки.")
+            return
+
+        del self.notes[note_index - 1]
+        print("Заметка удалена.")
+
+note_manager = NoteManager()
+
+while True:
+    print("Выберите действие:")
+    print("1. Создать заметку")
+    print("2. Сохранить заметки")
+    print("3. Просмотреть список заметок")
+    print("4. Редактировать заметку")
+    print("5. Удалить заметку")
+    print("0. Выход")
+
+    choice = int(input())
+
+    if choice == 1:
+        note_manager.create_note()
+    elif choice == 2:
+        note_manager.save_notes()
+    elif choice == 3:
+        note_manager.read_notes()
+    elif choice == 4:
+        note_manager.edit_note()
+    elif choice == 5:
+        note_manager.delete_note()
+    elif choice == 0:
+        break
+    else:
+        print("Неверный выбор. Попробуйте еще раз.")
